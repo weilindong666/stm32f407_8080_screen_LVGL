@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "touch_ft6336.h"
+#include "lvgl_port.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,10 +45,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-static const osThreadAttr_t touchTask_attributes = {
-  .name = "touchTask",
-  .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+/* 8 KB 栈从 FreeRTOS 的 15 KB 堆中分配；LVGL 对象使用独立内存池。 */
+static const osThreadAttr_t lvglTask_attributes = {
+  .name = "lvglTask",
+  .stack_size = 2048 * 4,
+  .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -100,7 +101,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  if (osThreadNew(FT6336_StartTask, NULL, &touchTask_attributes) == NULL) {
+  if (osThreadNew(LVGL_Port_Task, NULL, &lvglTask_attributes) == NULL) {
     Error_Handler();
   }
   /* USER CODE END RTOS_THREADS */

@@ -14,6 +14,8 @@ extern "C" {
 
 /* FT6336 的 7 位 I2C 地址；HAL 使用左移一位后的地址。 */
 #define FT6336_I2C_ADDRESS       (0x38U << 1)
+/* 单次 I2C 读取超时（毫秒），避免触摸通信异常长时间阻塞界面。 */
+#define FT6336_I2C_TIMEOUT_MS    10U
 
 /* 原始触摸坐标通常以屏幕竖向 320×480 为基准。 */
 #define FT6336_RAW_WIDTH         320U
@@ -23,7 +25,7 @@ extern "C" {
  * 横屏初值参考 ESPProjects/SPI_Screen_test2 中已有的映射：
  * x=479-raw_y，y=raw_x。它仍需在当前实物上点四角确认。
  * LCD 的 MIRROR_X/Y 会在这之后自动叠加，不要在这里重复补偿。
- * 这些参数只转换坐标；是否点击及换色不依赖坐标是否有效。 */
+ * LVGL 使用转换后的有效坐标判断按钮命中，越界坐标不会触发按钮。 */
 #include "lcd8080.h"
 #define FT6336_SWAP_XY           LCD8080_LANDSCAPE
 #define FT6336_INVERT_X          LCD8080_LANDSCAPE
@@ -40,7 +42,7 @@ typedef struct
     uint8_t  coordinates_valid; /* 1=坐标在原始量程内 */
 } FT6336_PointTypeDef;
 
-/* 可在调试器观察：HAL_OK=最近通信成功；颜色计数每次新按下加一。
+/* 可在调试器观察：HAL_OK=最近通信成功；按下计数每次新按下加一。
  * latest_point 同时保留原始坐标和转换后的坐标。 */
 extern volatile HAL_StatusTypeDef g_ft6336_status;
 extern volatile FT6336_PointTypeDef g_ft6336_latest_point;
@@ -51,9 +53,6 @@ HAL_StatusTypeDef FT6336_Init(void);
 HAL_StatusTypeDef FT6336_ReadPoint(FT6336_PointTypeDef *point);
 void FT6336_TransformPoint(uint16_t raw_x, uint16_t raw_y,
                            uint16_t *x, uint16_t *y);
-
-/* FreeRTOS 任务：检测一次新的按下事件后切换背景色。 */
-void FT6336_StartTask(void *argument);
 
 #ifdef __cplusplus
 }

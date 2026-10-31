@@ -13,8 +13,7 @@ extern "C" {
  * LCD8080_MIRROR_X ：0 = 左右正常，1 = 左右翻转
  * LCD8080_MIRROR_Y ：0 = 上下正常，1 = 上下翻转
  *
- * 如果屏幕实际左右方向与观察到的 ABCD 相反，只需要修改
- * LCD8080_MIRROR_X，不需要修改驱动代码。
+ * LVGL 分辨率和触摸坐标转换会跟随这些参数；修改后重新编译生效。
  */
 #define LCD8080_LANDSCAPE 1U
 #define LCD8080_MIRROR_X  0U
@@ -45,6 +44,9 @@ void LCD8080_SetWindow(uint16_t x0, uint16_t y0,
 void LCD8080_Fill(uint16_t color);
 void LCD8080_FillWindow(uint16_t x0, uint16_t y0,
                         uint16_t x1, uint16_t y1, uint16_t color);
+/* 先 SetWindow，再调用本函数：发送 0x2C，按行写入连续 RGB565 像素。
+ * pixels 使用本机半字顺序，无需交换高低字节；count 不能超过窗口面积。 */
+void LCD8080_WritePixels(const uint16_t *pixels, uint32_t count);
 void LCD8080_DrawOrientationLabel(void);
 
 #ifdef __cplusplus

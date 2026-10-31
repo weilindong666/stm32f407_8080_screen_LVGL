@@ -69,7 +69,7 @@ static uint8_t lcd8080_madctl_value(void)
 
 static uint8_t lcd8080_glyph(char c, uint8_t row)
 {
-    /* 5x7 font, rows are LSB-first. */
+    /* 5x7 font, bit 4 is the leftmost pixel of each row. */
     static const char alphabet[] = "ABDEFCILNOPRSTV";
     static const uint8_t glyphs[][7] = {
         {0x0EU,0x11U,0x11U,0x1FU,0x11U,0x11U,0x11U}, /* A */
@@ -193,6 +193,18 @@ void LCD8080_Fill(uint16_t color)
 {
     LCD8080_FillWindow(0U, 0U, LCD8080_WIDTH - 1U,
                        LCD8080_HEIGHT - 1U, color);
+}
+
+void LCD8080_WritePixels(const uint16_t *pixels, uint32_t count)
+{
+    if ((pixels == NULL) || (count == 0U)) {
+        return;
+    }
+    /* SetWindow 只设置地址；每个新窗口必须先发送 Memory Write。 */
+    lcd8080_write_command(0x2CU);
+    while (count-- != 0U) {
+        lcd8080_write_data16(*pixels++);
+    }
 }
 
 void LCD8080_Init(void)

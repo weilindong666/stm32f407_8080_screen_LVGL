@@ -25,11 +25,10 @@
 #include "usart.h"
 #include "gpio.h"
 #include "fsmc.h"
-#include "lcd8080.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lcd8080.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,8 +110,7 @@ int main(void)
    * up the GPIO, then enable it immediately before the ST7796 sequence. */
   HAL_GPIO_WritePin(BL_GPIO_Port, BL_Pin, GPIO_PIN_SET);
   LCD8080_Init();
-  LCD8080_Fill(LCD8080_RED);
-  LCD8080_DrawOrientationLabel();
+  /* LVGL 和触摸在 lvglTask 中初始化，此后由同一个任务管理。 */
 
   /* USER CODE END 2 */
 

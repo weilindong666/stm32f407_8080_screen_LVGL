@@ -29,7 +29,22 @@ project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
 # Enable CMake support for ASM and C languages
-enable_language(C ASM)
+enable_language(C CXX ASM)
+
+# LVGL 10 开发版完整源码已复制到本项目的 lvgl 目录，工程可独立拷贝构建。
+set(LVGL_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/lvgl")
+set(LV_BUILD_CONF_PATH "${CMAKE_CURRENT_LIST_DIR}/lv_conf.h" CACHE PATH
+    "Project LVGL configuration" FORCE)
+set(LV_BUILD_INSTALL OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_USE_THORVG OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_USE_THORVG_INTERNAL OFF CACHE BOOL "" FORCE)
+set(LV_USE_FIND_PACKAGE OFF CACHE BOOL "" FORCE)
+set(LV_USE_PKG_CONFIG OFF CACHE BOOL "" FORCE)
+set(LV_FETCH_DEPENDENCIES OFF CACHE BOOL "" FORCE)
+add_subdirectory("${LVGL_ROOT_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lvgl")
+include(cmake/lvgl.cmake)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
@@ -46,6 +61,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/touch_ft6336.c
+    Core/Src/lvgl_port.c
 )
 
 # Add include paths
@@ -64,6 +80,7 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
+    lvgl
 
     # Add user defined libraries
 )

@@ -19,7 +19,8 @@ static void ft6336_delay_ms(uint32_t ms)
 static HAL_StatusTypeDef ft6336_read(uint8_t reg, uint8_t *data, uint16_t size)
 {
     return HAL_I2C_Mem_Read(&FT6336_I2C_HANDLE, FT6336_I2C_ADDRESS, reg,
-                            I2C_MEMADD_SIZE_8BIT, data, size, 100U);
+                            I2C_MEMADD_SIZE_8BIT, data, size,
+                            FT6336_I2C_TIMEOUT_MS);
 }
 
 HAL_StatusTypeDef FT6336_Init(void)
@@ -129,52 +130,4 @@ void FT6336_TransformPoint(uint16_t raw_x, uint16_t raw_y,
     }
     *x = (uint16_t)tx;
     *y = (uint16_t)ty;
-}
-
-void FT6336_StartTask(void *argument)
-{
-    static const uint16_t colors[] = {
-        LCD8080_RED, LCD8080_GREEN, LCD8080_BLUE, LCD8080_YELLOW,
-        LCD8080_MAGENTA, LCD8080_CYAN, LCD8080_WHITE, LCD8080_BLACK
-    };
-    FT6336_PointTypeDef point = {0};
-    uint8_t was_pressed = 0U;
-    uint8_t release_samples = 0U;
-    uint32_t color_index = 0U;
-
-    (void)argument;
-    /* 在调度器启动后初始化，复位等待期间让出 CPU；失败时每秒重试。
-     * 不把通信错误当作松手，避免 I2C 短暂失败触发重复换色。 */
-    do {
-        g_ft6336_status = FT6336_Init();
-        if (g_ft6336_status != HAL_OK) {
-            ft6336_delay_ms(1000U);
-        }
-    } while (g_ft6336_status != HAL_OK);
-
-    for (;;) {
-        g_ft6336_status = FT6336_ReadPoint(&point);
-        if (g_ft6336_status == HAL_OK) {
-            g_ft6336_latest_point = point;
-            if (point.pressed) {
-                release_samples = 0U;
-            } else if (release_samples < 2U) {
-                ++release_samples;
-            }
-            if (point.pressed && !was_pressed) {
-                ++g_ft6336_press_count;
-                color_index = (color_index + 1U) %
-                              (sizeof(colors) / sizeof(colors[0]));
-                LCD8080_Fill(colors[color_index]);
-                was_pressed = 1U;
-            }
-            /* 连续两个周期无触摸才允许下一次按下，长按/拖动只换一次。 */
-            if (release_samples >= 2U) {
-                was_pressed = 0U;
-            }
-        } else {
-            release_samples = 0U;
-        }
-        ft6336_delay_ms(20U);
-    }
 }
