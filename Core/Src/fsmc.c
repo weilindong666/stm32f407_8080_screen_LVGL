@@ -61,7 +61,7 @@ void MX_FSMC_Init(void)
   hsram1.Init.PageSize = FSMC_PAGE_SIZE_NONE;
   /* Timing */
   Timing.AddressSetupTime = 1;
-  Timing.AddressHoldTime = 1;
+  Timing.AddressHoldTime = 15;
   Timing.DataSetupTime = 3;
   Timing.BusTurnAroundDuration = 0;
   Timing.CLKDivision = 16;

@@ -202,6 +202,14 @@ void LCD8080_WritePixels(const uint16_t *pixels, uint32_t count)
     }
     /* SetWindow 只设置地址；每个新窗口必须先发送 Memory Write。 */
     lcd8080_write_command(0x2CU);
+    LCD8080_WritePixelsContinue(pixels, count);
+}
+
+void LCD8080_WritePixelsContinue(const uint16_t *pixels, uint32_t count)
+{
+    if ((pixels == NULL) || (count == 0U)) {
+        return;
+    }
     while (count-- != 0U) {
         lcd8080_write_data16(*pixels++);
     }

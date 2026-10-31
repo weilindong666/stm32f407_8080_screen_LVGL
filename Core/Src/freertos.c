@@ -45,10 +45,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-/* 8 KB 栈从 FreeRTOS 的 15 KB 堆中分配；LVGL 对象使用独立内存池。 */
+/* 12 KB 栈从 FreeRTOS 的 24 KB 堆中分配；LVGL 对象使用独立内存池。
+ * widgets demo 切页时调用链较深，8 KB 栈容易触发异常。 */
 static const osThreadAttr_t lvglTask_attributes = {
   .name = "lvglTask",
-  .stack_size = 2048 * 4,
+  .stack_size = 3072 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* USER CODE END Variables */

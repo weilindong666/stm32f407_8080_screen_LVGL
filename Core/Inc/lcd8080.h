@@ -47,6 +47,9 @@ void LCD8080_FillWindow(uint16_t x0, uint16_t y0,
 /* 先 SetWindow，再调用本函数：发送 0x2C，按行写入连续 RGB565 像素。
  * pixels 使用本机半字顺序，无需交换高低字节；count 不能超过窗口面积。 */
 void LCD8080_WritePixels(const uint16_t *pixels, uint32_t count);
+/* 在同一个窗口内继续发送像素，不重新发送 0x2C；用于 LVGL 按行
+ * 处理带 stride 的局部缓冲。 */
+void LCD8080_WritePixelsContinue(const uint16_t *pixels, uint32_t count);
 void LCD8080_DrawOrientationLabel(void);
 
 #ifdef __cplusplus

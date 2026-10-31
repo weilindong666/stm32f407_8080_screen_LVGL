@@ -14,7 +14,8 @@ extern "C" {
 
 /* FT6336 的 7 位 I2C 地址；HAL 使用左移一位后的地址。 */
 #define FT6336_I2C_ADDRESS       (0x38U << 1)
-/* 单次 I2C 读取超时（毫秒），避免触摸通信异常长时间阻塞界面。 */
+/* 单次 I2C 读取超时（毫秒）。触摸在 LVGL 任务中轮询，超时过长会让
+ * 页面切换看起来像死机；总线异常时让本次采样快速失败即可。 */
 #define FT6336_I2C_TIMEOUT_MS    10U
 
 /* 原始触摸坐标通常以屏幕竖向 320×480 为基准。 */
@@ -22,14 +23,14 @@ extern "C" {
 #define FT6336_RAW_HEIGHT        480U
 
 /* 触摸安装方向校正：先交换轴，再反转；均为 0=关闭，1=开启。
- * 横屏初值参考 ESPProjects/SPI_Screen_test2 中已有的映射：
- * x=479-raw_y，y=raw_x。它仍需在当前实物上点四角确认。
+ * 当前横屏映射：x=raw_y，y=319-raw_x。
+ * 根据实物反馈取消左右反转，保留上下方向校正。
  * LCD 的 MIRROR_X/Y 会在这之后自动叠加，不要在这里重复补偿。
  * LVGL 使用转换后的有效坐标判断按钮命中，越界坐标不会触发按钮。 */
 #include "lcd8080.h"
 #define FT6336_SWAP_XY           LCD8080_LANDSCAPE
-#define FT6336_INVERT_X          LCD8080_LANDSCAPE
-#define FT6336_INVERT_Y          0U
+#define FT6336_INVERT_X          0U /* 0=不反转左右坐标，1=反转 */
+#define FT6336_INVERT_Y          1U /* 0=不反转上下坐标，1=反转 */
 
 typedef struct
 {

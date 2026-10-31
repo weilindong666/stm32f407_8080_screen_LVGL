@@ -13,8 +13,9 @@
 #define LV_DRAW_BUF_STRIDE_ALIGN 1
 #define LV_DRAW_BUF_ALIGN 4
 
-/* LVGL 内存池；绘图缓冲另占约 19.2 KB，需给 FreeRTOS 堆和任务栈留空间。 */
-#define LV_MEM_SIZE (48U * 1024U)
+/* LVGL 内存池；widgets demo 的分页、图表和动画需要更大的余量。
+ * 绘图缓冲另占约 19.2 KB，FreeRTOS 堆和任务栈仍独立分配。 */
+#define LV_MEM_SIZE (64U * 1024U)
 #define LV_MEM_ADR 0
 
 /* 当前界面使用软件渲染和基础主题；关闭不需要的矢量/日志功能。 */
@@ -34,43 +35,49 @@
 #define LV_USE_ASSERT 0
 #define LV_USE_SYSMON 0
 
-/* 当前只用按钮和文字，关闭图片解码器及未使用的小部件，缩小最终固件。 */
-#define LV_USE_IMAGE 0
-#define LV_USE_IMAGEBUTTON 0
-#define LV_USE_ANIMIMG 0
-#define LV_USE_CANVAS 0
-#define LV_USE_CHART 0
-#define LV_USE_CALENDAR 0
-#define LV_USE_DROPDOWN 0
-#define LV_USE_KEYBOARD 0
-#define LV_USE_MSGBOX 0
-#define LV_USE_ROLLER 0
-#define LV_USE_SCALE 0
-#define LV_USE_SLIDER 0
-#define LV_USE_SPAN 0
-#define LV_USE_SPINBOX 0
-#define LV_USE_SPINNER 0
-#define LV_USE_SWITCH 0
-#define LV_USE_TEXTAREA 0
-#define LV_USE_TABLE 0
-#define LV_USE_TABVIEW 0
-#define LV_USE_TILEVIEW 0
-#define LV_USE_ARC 0
-#define LV_USE_ARCLABEL 0
-#define LV_USE_BAR 0
-#define LV_USE_BARCODE 0
-#define LV_USE_CHECKBOX 0
-#define LV_USE_LED 0
-#define LV_USE_LINE 0
-#define LV_USE_QRCODE 0
-#define LV_USE_THEME_SIMPLE 0
-#define LV_USE_THEME_MONO 0
-#define LV_USE_FLEX 0
-#define LV_USE_GRID 0
+/* widgets demo 需要的控件、图片、字体和布局功能。 */
+#define LV_USE_IMAGE 1
+#define LV_USE_IMAGEBUTTON 1
+#define LV_USE_ANIMIMG 1
+#define LV_USE_CANVAS 1
+#define LV_USE_CHART 1
+#define LV_USE_CALENDAR 1
+#define LV_USE_DROPDOWN 1
+#define LV_USE_KEYBOARD 1
+#define LV_USE_MSGBOX 1
+#define LV_USE_ROLLER 1
+#define LV_USE_SCALE 1
+#define LV_USE_SLIDER 1
+#define LV_USE_SPAN 1
+#define LV_USE_SPINBOX 1
+#define LV_USE_SPINNER 1
+#define LV_USE_SWITCH 1
+#define LV_USE_TEXTAREA 1
+#define LV_USE_TABLE 1
+#define LV_USE_TABVIEW 1
+#define LV_USE_TILEVIEW 1
+#define LV_USE_ARC 1
+#define LV_USE_ARCLABEL 1
+#define LV_USE_BAR 1
+#define LV_USE_BARCODE 1
+#define LV_USE_CHECKBOX 1
+#define LV_USE_LED 1
+#define LV_USE_LINE 1
+#define LV_USE_QRCODE 1
+#define LV_USE_THEME_DEFAULT 1
+#define LV_USE_THEME_SIMPLE 1
+#define LV_USE_THEME_MONO 1
+#define LV_USE_FLEX 1
+#define LV_USE_GRID 1
+#define LV_FONT_MONTSERRAT_14 1
+#define LV_FONT_MONTSERRAT_20 1
+#define LV_FONT_MONTSERRAT_24 1
+#define LV_FONT_MONTSERRAT_26 1
 #define LV_USE_ANIM 1
 
-/* 只启用当前演示，不在固件中自动运行官方 demo。 */
+/* 当前测试官方 widgets demo；其他 demo 仍保持关闭。 */
 #define LV_BUILD_EXAMPLES 0
-#define LV_USE_DEMO_WIDGETS 0
+#define LV_BUILD_DEMOS 1
+#define LV_USE_DEMO_WIDGETS 1
 
 #endif /* LV_CONF_H */

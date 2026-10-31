@@ -12,20 +12,18 @@
 ## 当前运行界面
 
 - `Core/Src/lvgl_port.c` 创建 480×320 的 RGB565 显示器，使用 20 行局部绘图缓冲。
-- 屏幕初始为红色，中央按钮显示 `touch`。
-- 只有在按钮范围内按下并松手，背景才会在红、绿、蓝、黄、品红、青、白、黑之间切换。
+- 当前启动官方 widgets demo；原来的纯色背景和 `touch` 按钮代码仍保留在 `#if 0` 中。
 - FT6336 坐标继续使用 `touch_ft6336.h` 中的轴交换、X/Y 反转和 LCD 镜像参数。
 - LVGL 只由 `lvglTask` 调用，`LV_USE_OS` 设置为 `LV_OS_NONE`，避免多个任务同时访问 LVGL。
 
 ## 内存和配置
 
-`lv_conf.h` 将 LVGL 内存池设为 48 KB，显示缓冲约 19.2 KB；FreeRTOS 的堆和任务栈仍由
-原工程配置管理。F407 的 RAM 较紧，启用官方 demo、较大字体或图片前应先查看链接器的
+`lv_conf.h` 将 LVGL 内存池设为 64 KB，显示缓冲约 19.2 KB；FreeRTOS 堆调整为 24 KB，
+widgets 任务栈调整为 12 KB。F407 的 RAM 较紧，启用官方 demo、较大字体或图片前应先查看链接器的
 RAM 使用量，并相应减小 `LV_MEM_SIZE`、绘图缓冲或任务栈。
 
-官方 demo 当前没有加入固件启动流程。后续实验时可在 `CMakeLists.txt` 打开
-`CONFIG_LV_BUILD_DEMOS`，同时在 `lv_conf.h` 打开 `LV_BUILD_DEMOS`、对应的
-`LV_USE_DEMO_*` 以及该 demo 需要的控件、字体等配置，并将 demo 库链接到主程序，
+当前已经启用并启动 widgets demo。后续切换其他官方 demo 时，需要在
+`lv_conf.h` 打开对应的 `LV_USE_DEMO_*` 以及它需要的控件、字体等配置，
 再在 `lvgl_port.c` 中调用相应 demo 的创建函数。
 
 工程按用户要求未执行编译；请在本机编译后观察屏幕和触摸坐标。若四角坐标方向不一致，
